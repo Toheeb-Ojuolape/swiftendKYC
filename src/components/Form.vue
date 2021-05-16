@@ -45,6 +45,7 @@
               <smart-camera-web>
           </smart-camera-web>
               <v-select
+                v-model="idtype"
                 outlined
                 :items="items"
                 dense
@@ -55,6 +56,7 @@
                 label="Select ID Type"
               />
               <v-text-field
+                v-model="id"
                 label="ID No."
                 outlined
                 :color="color"
@@ -101,7 +103,7 @@
               >
               </v-checkbox>
 
-              <v-btn :color="showColor" block class="white--text">
+              <v-btn @click="postData()" :disabled="!checkbox" :color="showColor" block class="white--text">
                 Submit
               </v-btn>
             </v-form>
@@ -145,6 +147,9 @@ export default {
     elevation: 0,
     color: "#f58634",
     location: {},
+    id:"",
+    idtype:"",
+    payload:{},
     types: ["hex"],
     type: "hex",
     hex: "#FF00FF",
@@ -180,6 +185,10 @@ export default {
     sliderChange(slider) {
       this.elevation = slider;
     },
+    postData(){
+      this.payload = {ID:this.idtype, IDNumber:this.id, location:this.location.exact}
+      console.log(this.payload)
+    }
   },
 };
 </script>
