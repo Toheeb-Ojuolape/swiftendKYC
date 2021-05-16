@@ -2,6 +2,7 @@
   <v-container>
     <v-row>
       <v-col md=3 sm=3 lg=3>
+      <div style="width:450px;margin:2% auto 10% auto;max-width:100%">
         <h2 class="mt-6">Customization Options</h2>
         <p>Choose Theme Color:</p>
         <v-color-picker v-model="color"></v-color-picker>
@@ -17,6 +18,7 @@
           @change="sliderChange(slider)"
           max="24"
         ></v-slider>
+        </div>
         </div>
       </v-col>
       <v-col>
@@ -40,8 +42,8 @@
                   style="text-align:center;margin-bottom:20px"
                 />
               </div>
-              <!-- <smart-camera-web>
-          </smart-camera-web> -->
+              <smart-camera-web>
+          </smart-camera-web>
               <v-select
                 outlined
                 :items="items"
@@ -120,7 +122,7 @@
 </template>
 
 <script>
-// import '@smile_identity/smart-camera-web'
+import '@smile_identity/smart-camera-web'
 import VueGoogleAutocomplete from "vue-google-autocomplete";
 
 export default {
@@ -154,14 +156,6 @@ export default {
   }),
 
   computed: {
-    color: {
-      get() {
-        return this[this.type];
-      },
-      set(v) {
-        this[this.type] = v;
-      },
-    },
     showColor() {
       if (typeof this.color === "string") return this.color;
 
