@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col md=3 sm=3 lg=3>
+      <v-dialog v-model="dialog">
+      <v-card width="400px" class="py-1 px-5 pb-7">
       <div style="width:450px;margin:2% auto 10% auto;max-width:100%">
-        <h2 class="mt-6">Customization Options</h2>
+        <h3 class="mt-6">Customization Options</h3>
         <p>Choose Theme Color:</p>
         <v-color-picker v-model="color"></v-color-picker>
-        <p style="margin-top:20px;margin-bottom:-10px">Form Shadow</p>
+        <p style="margin-top:10px;margin-bottom:-10px">Form Elevation</p>
         <div style="width:276px">
         <v-slider
           v-model="slider"
@@ -19,9 +19,13 @@
           max="24"
         ></v-slider>
         </div>
+        <p style="margin-top:-10px;margin-bottom:-4px">Background Color</p>
+        <div v-for="(color,index) in themesList" :key="index" style="float:left;margin:5px 5px 30px 5px;">
+        <v-btn x-small  :color="color.color" fab @click="setTheme(index)" />
         </div>
-      </v-col>
-      <v-col>
+        </div>
+          </v-card>
+      </v-dialog>
         <v-card
           class="pa-7"
           width="450px"
@@ -66,6 +70,7 @@
               />
               <v-select
                 outlined
+                v-model="addresstype"
                 :items="address"
                 dense
                 :color="showColor"
@@ -114,12 +119,23 @@
               small
               style="float:right"
               class="white--text mb-0 mt-1"
-              >CLOSE</v-btn
+              @click="stepBack()"
+              >Close</v-btn
             >
           </v-card-actions>
         </v-card>
-      </v-col>
-    </v-row>
+    <v-btn
+        :color="color"
+        fab
+        x-large
+        dark
+        bottom
+        fixed
+        right
+        @click="dialog=true"
+      >
+        <v-icon>mdi-cogs</v-icon>
+      </v-btn>
   </v-container>
 </template>
 
@@ -130,7 +146,9 @@ import VueGoogleAutocomplete from "vue-google-autocomplete";
 export default {
   name: "Form",
   components: { VueGoogleAutocomplete },
-
+  props:{
+    themesList:Array,
+  },
   data: () => ({
     items: [
       "Bank Verificationn Number (BVN)",
@@ -145,10 +163,12 @@ export default {
     ],
     checkbox: false,
     elevation: 0,
+    step:2,
     color: "#f58634",
     location: {},
     id:"",
     idtype:"",
+    addresstype:"",
     payload:{},
     types: ["hex"],
     type: "hex",
@@ -158,6 +178,7 @@ export default {
     hsla: { h: 300, s: 1, l: 0.5, a: 1 },
     hsva: { h: 300, s: 1, v: 1, a: 1 },
     slider: 0,
+    dialog:false
   }),
 
   computed: {
@@ -186,9 +207,23 @@ export default {
       this.elevation = slider;
     },
     postData(){
-      this.payload = {ID:this.idtype, IDNumber:this.id, location:this.location.exact}
+      this.payload = {ID:this.idtype, IDNumber:this.id, addresstype:this.addresstype, location:this.location.exact}
       console.log(this.payload)
+    },
+    setTheme(index){
+      this.$emit("setTheme", index);
+    },
+    stepBack(){
+      this.$emit("stepBack")
     }
+
   },
 };
 </script>
+
+<style>
+.v-btn{
+  text-transform: none;
+}
+
+</style>
