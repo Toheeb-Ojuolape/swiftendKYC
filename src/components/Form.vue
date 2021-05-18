@@ -1,11 +1,38 @@
 <template>
   <v-container>
-    <v-dialog v-model="dialog">
+    <!-- Customization modal -->
+    <!-- <v-dialog v-model="dialog">
       <v-card width="400px" class="py-1 px-5 pb-9">
         <div style="width:450px;margin:2% auto 10% auto;max-width:100%">
           <h3 class="mt-6">Customization Options</h3>
           <p>Choose Theme Color:</p>
-          <v-color-picker v-model="color"></v-color-picker>
+          <v-text-field
+            v-model="color"
+            v-mask="mask"
+            hide-details
+            class="ma-0 pa-0"
+            solo
+          >
+            <template v-slot:append>
+              <v-menu
+                v-model="menu"
+                top
+                nudge-bottom="105"
+                nudge-left="16"
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on }">
+                  <div :style="swatchStyle" v-on="on" />
+                </template>
+                <v-card>
+                  <v-card-text class="pa-0">
+                    <v-color-picker v-model="color" flat />
+                  </v-card-text>
+                </v-card>
+              </v-menu>
+            </template>
+          </v-text-field>
+
           <p style="margin-top:10px;margin-bottom:-10px">Form Elevation</p>
           <div style="width:276px">
             <v-slider
@@ -28,26 +55,181 @@
             <v-btn x-small :color="color.color" fab @click="setTheme(index)" />
           </div>
         </div>
-        
       </v-card>
+    </v-dialog> -->
+
+    <v-dialog v-model="error" max-width="500">
+    <v-card elevation="24" color="red" class="pa-7 text-center">
+    <v-icon size="100px" color='white'>mdi-close-circle</v-icon>
+    <h1 style="font-size:23px;padding:10px;color:white" class="font-weight-black"> No Data was Posted</h1>
+    <p style="font-size:15px;color:white">You need to select atleast one verification type so that Data can be posted to our database</p>
+    <v-btn @click='error=false' elevation="24"> Ok</v-btn>
+   </v-card>
     </v-dialog>
 
-    <v-dialog v-model="logo">
-      <v-card class="pa-4" style="margin:auto" width="300px">
-        <h2>Upload your logo</h2>
-        <v-text-field
+    <v-dialog v-model="success" max-width="500">
+    <v-card elevation="24" color="green" class="pa-7 text-center">
+    <v-icon size="100px" color='white'>mdi-check-circle</v-icon>
+    <h1 style="font-size:23px;padding:10px;color:white" class="font-weight-black"> Data Submitted Successfully!</h1>
+    <p style="font-size:15px;color:white">Congratulations! Your verification data has successfully been posted to our database!</p>
+    <v-btn @click='success=false' elevation="24"> Ok</v-btn>
+   </v-card>
+    </v-dialog>
+
+
+    <!-- Customization modal end -->
+    <v-row>
+    <v-col md=4 sm=4 lg=4>
+    <v-card style="margin:6% auto 10% auto;ma-width:100%" width="400px" class="py-1 px-5 pb-2">
+      <div style="width:450px;margin:2% auto 10% auto;max-width:100%">
+        <h3 class="mt-6 mb-2">Customization Options</h3>
+        <p class="mb-0">Logo URL</p>
+         <v-text-field
           v-model="logoLink"
           prepend-inner-icon="mdi-camera"
-          label="Paste a link to your logo image here"
+          label="Please paste a URL to your logo here"
+          outlined
+          dense
+          :color="color"
+          single-line
         />
-        <v-btn @click="logo = false" outlined color="#fa9746" class="ma-3">
-          Close</v-btn
+
+        <p style="margin-bottom:5px">Choose Theme Color:</p>
+        <v-text-field
+          v-model="color"
+          v-mask="mask"
+          hide-details
+          class="ma-0 pa-0"
+          solo
         >
-      </v-card>
-    </v-dialog>
+          <template v-slot:append>
+            <v-menu
+              v-model="menu"
+              top
+              nudge-bottom="105"
+              nudge-left="16"
+              :close-on-content-click="false"
+            >
+              <template v-slot:activator="{ on }">
+                <div :style="swatchStyle" v-on="on" />
+              </template>
+              <v-card>
+                <v-card-text class="pa-0">
+                  <v-color-picker v-model="color" flat />
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </template>
+        </v-text-field>
+
+        <p style="margin-top:10px;margin-bottom:5px">Choose Button Color:</p>
+        <v-text-field
+          v-model="btncolor"
+          v-mask="mask"
+          hide-details
+          class="ma-0 pa-0"
+          solo
+        >
+          <template v-slot:append>
+            <v-menu
+              v-model="menuBtn"
+              top
+              nudge-bottom="105"
+              nudge-left="16"
+              :close-on-content-click="false"
+            >
+              <template v-slot:activator="{ on }">
+                <div :style="btnStyle" v-on="on" />
+              </template>
+              <v-card>
+                <v-card-text class="pa-0">
+                  <v-color-picker v-model="btncolor" flat />
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </template>
+        </v-text-field>
+
+
+        <p style="margin-top:17px;margin-bottom:-13px">Card Width</p>
+         <v-slider
+            v-model="width"
+            min="300px"
+            thumb-label
+            height="50"
+            dense
+            class="mt-0"
+            style="margin-top:-30px"
+            @change="widthChange(width)"
+            max="766px"
+          ></v-slider>
+
+        <p style="margin-top:-10px;margin-bottom:-13px">Card Elevation</p>
+        <div>
+          <v-slider
+            v-model="slider"
+            thumb-label
+            height="50"
+            dense
+            class="mt-0"
+            style="margin-top:-30px"
+            @change="sliderChange(slider)"
+            max="24"
+          ></v-slider>
+        </div>
+        <p style="margin-top:-10px;margin-bottom:4px">Background Color</p>
+        <v-text-field
+          v-model="bgcolor"
+          v-mask="mask"
+          hide-details
+          class="ma-0 pa-0"
+          solo
+        >
+          <template v-slot:append>
+            <v-menu
+              v-model="menuBg"
+              top
+              nudge-bottom="105"
+              nudge-left="16"
+              :close-on-content-click="false"
+            >
+              <template v-slot:activator="{ on }">
+                <div :style="bgStyle" v-on="on" />
+              </template>
+              <v-card>
+                <v-card-text class="pa-0">
+                  <v-color-picker v-model="bgcolor" :value="bgcolor" @input="changeBackground(bgcolor)" flat />
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </template>
+        </v-text-field>
+
+        <v-radio-group row v-model="IDs">
+            <template v-slot:label>
+              <div style="width:100%;font-size:16px">
+                Do you want to verify identity using BVN, NIN or CAC?
+              </div>
+            </template>
+            <v-radio label="Yes" value="true"></v-radio>
+            <v-radio label="No" value="false"></v-radio>
+          </v-radio-group>
+          <v-radio-group row v-model="addresses">
+            <template v-slot:label>
+              <div style="font-size:16px">
+                Do you want to verify identity using Address?
+              </div>
+            </template>
+            <v-radio label="Yes" value="true"></v-radio>
+            <v-radio label="No" value="false"></v-radio>
+          </v-radio-group>
+      </div>
+    </v-card>
+     </v-col>
+     <v-col>
     <v-card
       class="pa-7"
-      width="450px"
+      :width="width"
       style="margin:2% auto 10% auto;max-width:100%"
       :elevation="elevation"
     >
@@ -66,15 +248,6 @@
             />
           </div>
           <smart-camera-web> </smart-camera-web>
-          <v-radio-group row v-model="IDs" v-if="IDs == 'false'">
-            <template v-slot:label>
-              <div style="font-size:16px">
-                Do you want to verify your identity using your BVN, NIN or CAC?
-              </div>
-            </template>
-            <v-radio label="Yes" value="true"></v-radio>
-            <v-radio label="No" value="false"></v-radio>
-          </v-radio-group>
           <div v-if="IDs == 'true'">
             <v-select
               v-model="idtype"
@@ -97,15 +270,6 @@
               dense
             />
           </div>
-          <v-radio-group row v-model="addresses" v-if="addresses == 'false'">
-            <template v-slot:label>
-              <div style="font-size:16px">
-                Do you want to verify your identity with your Address?
-              </div>
-            </template>
-            <v-radio label="Yes" value="true"></v-radio>
-            <v-radio label="No" value="false"></v-radio>
-          </v-radio-group>
           <div v-if="addresses == 'true'">
             <v-select
               outlined
@@ -153,8 +317,11 @@
 
           <v-btn
             @click="postData()"
-            :disabled="(IDs == 'false' || !checkbox) && (addressses == 'false' || !checkbox)"
-            :color="showColor"
+            :disabled="
+              (IDs == 'false' || !checkbox) &&
+                (addressses == 'false' || !checkbox)
+            "
+            :color="btncolor"
             block
             class="white--text"
           >
@@ -164,7 +331,7 @@
       </v-card>
       <v-card-actions>
         <v-btn
-          color="#0f585b"
+          :color="color"
           small
           style="float:right"
           class="white--text mb-0 mt-1"
@@ -173,60 +340,60 @@
         >
       </v-card-actions>
     </v-card>
-        <v-speed-dial
-            v-model="dialShare"
-            absolute
-            right
-            bottom
-            direction="top"
-            :color="color"
-            :open-on-hover="hover"
-          >
-            <template v-slot:activator>
-              <v-btn
-                fab
-                bottom
-                x-large
-                fixed
-                :color="color"
-                style="margin-left:-80px"
-              >
-                <v-icon v-if="dialShare" class="white--text">mdi-close</v-icon>
-                <v-icon v-else class="white--text">mdi-cog</v-icon>
-              </v-btn>
-            </template>
-            <v-btn
-              dark
-              fab
-              fixed
-              bottom
-              :color="showColor"
-              large
-              target="_blank"
-              style="margin-left:-75px;margin-bottom:180px"
-              @click="dialog = true"
-            >
-              <v-icon>mdi-cogs</v-icon>
-            </v-btn>
+    </v-col>
+    
+   <!-- <v-speed-dial
+      v-model="dialShare"
+      absolute
+      right
+      bottom
+      direction="top"
+      :color="color"
+      :open-on-hover="hover"
+    >
+      <template v-slot:activator>
+        <v-btn
+          fab
+          bottom
+          x-large
+          fixed
+          :color="color"
+          style="margin-left:-80px"
+        >
+          <v-icon v-if="dialShare" class="white--text">mdi-close</v-icon>
+          <v-icon v-else class="white--text">mdi-cog</v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        dark
+        fab
+        fixed
+        bottom
+        :color="showColor"
+        large
+        target="_blank"
+        style="margin-left:-75px;margin-bottom:180px"
+        @click="dialog = true"
+      >
+        <v-icon>mdi-cogs</v-icon>
+      </v-btn>
 
-            <v-btn
-              dark
-              fab
-              fixed
-              bottom
-              color="black"
-              large            
-              target="_blank"
-              style="margin-left:-75px;margin-bottom:100px"
-              @click="logo=true"
-            >
-              <v-icon>mdi-camera</v-icon>
-            </v-btn>
+      <v-btn
+        dark
+        fab
+        fixed
+        bottom
+        color="black"
+        large
+        target="_blank"
+        style="margin-left:-75px;margin-bottom:100px"
+        @click="logo = true"
+      >
+        <v-icon>mdi-camera</v-icon>
+      </v-btn>
+    </v-speed-dial> -->
 
-           
-          </v-speed-dial>
-         
-
+    </v-row>
   </v-container>
 </template>
 
@@ -274,7 +441,18 @@ export default {
     addresses: "false",
     logo: true,
     logoLink: "",
-    hover:false
+    hover: false,
+    mask: "!#XXXXXXXX",
+    menu: false,
+    menuBg:false,
+    menuBtn:false,
+    bgcolor:"#FFFFFFFF",
+    btncolor:"#f58634",
+    dialShare:"",
+    addressses:"",
+    error:false,
+    success:false,
+    width:450
   }),
 
   computed: {
@@ -290,7 +468,41 @@ export default {
         2
       );
     },
-   
+
+    swatchStyle() {
+      const { color, menu } = this;
+      return {
+        backgroundColor: color,
+        cursor: "pointer",
+        height: "30px",
+        width: "30px",
+        borderRadius: menu ? "50%" : "4px",
+        transition: "border-radius 200ms ease-in-out",
+      };
+    },
+
+    bgStyle() {
+      const { bgcolor, menuBg } = this;
+      return {
+        backgroundColor: bgcolor,
+        cursor: "pointer",
+        height: "30px",
+        width: "30px",
+        borderRadius: menuBg ? "50%" : "4px",
+        transition: "border-radius 200ms ease-in-out",
+      };
+    },
+    btnStyle() {
+      const { btncolor, menuBtn } = this;
+      return {
+        backgroundColor: btncolor,
+        cursor: "pointer",
+        height: "30px",
+        width: "30px",
+        borderRadius: menuBtn ? "50%" : "4px",
+        transition: "border-radius 200ms ease-in-out",
+      };
+    },
   },
 
   methods: {
@@ -303,7 +515,14 @@ export default {
     sliderChange(slider) {
       this.elevation = slider;
     },
+    widthChange(width) {
+      this.width = width;
+    },
     postData() {
+      if(this.id == "" && this.addresstype == ""){
+        this.error = true
+      }
+      else{
       this.payload = {
         ID: this.idtype,
         IDNumber: this.id,
@@ -311,9 +530,14 @@ export default {
         location: this.location.exact,
       };
       console.log(this.payload);
+      this.success = true
+      }
     },
     setTheme(index) {
       this.$emit("setTheme", index);
+    },
+    changeBackground(bgcolor){
+      this.$emit("changeBackground", bgcolor)
     },
     stepBack() {
       this.$emit("stepBack");

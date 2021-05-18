@@ -12,7 +12,7 @@
     </v-window-item>
     <v-window-item :value="2">
     <v-main :style="`background:${background}`">
-      <Form @stepBack="stepBack" :themesList="themesList" @setTheme="setTheme" />
+      <Form @stepBack="stepBack" :themesList="themesList" @changeBackground="changeBackground" />
     </v-main>
     </v-window-item>
     </v-window>
@@ -41,8 +41,8 @@ export default {
     background:'white'
   }),
   methods:{
-    setTheme(index){
-      this.background = this.themesList[index].color
+    changeBackground(bgcolor){
+      this.background = bgcolor
     },
 
     stepBack(){
